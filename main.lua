@@ -1,11 +1,12 @@
-local random = math.random
-
 local Hex = require 'hex'
 
 function love.load()
-  love.graphics.setBackgroundColor(255, 255, 255)
-
+  love.graphics.setBackgroundColor(25, 25, 25)
   grid = Hex(24, 37, 15)
+end
+
+function love.update(dt)
+  grid:update(dt)
 end
 
 function love.draw()
