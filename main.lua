@@ -6,6 +6,18 @@ function love.load()
 end
 
 function love.update(dt)
+  if love.mouse.isDown('l') then
+    local v = grid:select(love.mouse.getPosition())
+    if v then
+      v.color = { 255, 0, 0 }
+    end
+  elseif love.mouse.isDown('r') then
+    local v = grid:select(love.mouse.getPosition())
+    if v then
+      v.color = { 0, 0, 0 }
+    end
+  end
+
   grid:update(dt)
 end
 
