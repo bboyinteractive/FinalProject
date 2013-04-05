@@ -3,7 +3,30 @@ local sqrt, random = math.sqrt, math.random
 local Hex = {}
 Hex.__index = Hex
 
-function Hex:new(rows, columns, side)
+function Hex:new(x, y, side, apothem, color)
+  return setmetatable({
+    x = x,
+    y = y,
+    side = side,
+    apothem = apothem,
+    color = color,
+  }, self)
+end
+
+function Hex:draw()
+  love.graphics.setColor(self.color)
+  love.graphics.circle(
+    'fill',
+    self.x,
+    self.y,
+    self.side - 1,
+    6)
+end
+
+local Grid = {}
+Grid.__index = Grid
+
+function Grid:new(rows, columns, side)
   local m = {}
   local apothem = sqrt(3) / 2 * side
 
@@ -22,36 +45,23 @@ function Hex:new(rows, columns, side)
         y = m[r][c - 1].y + apothem
       end
 
-      m[r][c] = {
-        x = x,
-        y = y,
-        side = side,
-        apothem = apothem,
-        color = {
-          random(0, 255),
-          random(0, 255),
-          random(0, 255),
-        },
-      }
+      m[r][c] = Hex:new(x, y, side, apothem, { 0, 0, 0 })
     end
   end
 
   return setmetatable({ _m = m }, self)
 end
 
-function Hex:draw()
+function Grid:get(row, column)
+  return self._m[row][column]
+end
+
+function Grid:draw()
   for r = 1, #self._m do
     for c = 1, #self._m[r] do
-      local hex = self._m[r][c]
-      love.graphics.setColor(hex.color)
-      love.graphics.circle(
-        'fill',
-        hex.x,
-        hex.y,
-        hex.side - 1,
-        6)
+      self._m[r][c]:draw()
     end
   end
 end
 
-return setmetatable(Hex, { __call = Hex.new })
+return setmetatable(Grid, { __call = Grid.new })
