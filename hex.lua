@@ -1,27 +1,30 @@
-local sqrt, random, pi = math.sqrt, math.random, math.pi
+local sqrt, pi = math.sqrt, math.pi
+local Utils = require 'utils'
 
 local Hex = {}
 Hex.__index = Hex
 
 local MAX_DISPLACEMENT = 40
 
-local function dist(x, y)
-  return sqrt(x ^ 2 + y ^ 2)
-end
-
 function Hex:new(x, y, side, apothem, color)
-  return setmetatable({
-    x = x,
-    y = y,
-    side = side,
-    apothem = apothem,
-    color = color,
-    angle = 0,
-  }, self)
+  local o = {}
+  o.x, o.y = Utils.edgeRandom(side)
+  o.home = { x = x, y = y }
+  o.side = side
+  o.apothem = apothem
+  o.color = color
+  o.angle = 0
+  o.speed = 0
+  return setmetatable(o, self)
 end
 
 function Hex:update(dt)
-  self.angle = self.angle + dt * pi / 2
+  if not (self.x == self.home.x and self.y == self.home.y) then
+    self.x = self.x + (self.home.x - self.x) * dt
+    self.y = self.y + (self.home.y - self.y) * dt
+  end
+
+  self.angle = self.angle + dt * self.speed
   self.angle = self.angle % (pi * 2)
 end
 
@@ -41,6 +44,13 @@ function Hex:draw()
   love.graphics.setColor(self.color)
   love.graphics.circle(
     'fill',
+    self.x,
+    self.y,
+    self.side,
+    6)
+  love.graphics.setColor(love.graphics.getBackgroundColor())
+  love.graphics.circle(
+    'line',
     self.x,
     self.y,
     self.side,
@@ -68,8 +78,8 @@ function Grid:new(rows, columns, side)
         x = 3 * side * c
         y = 2 * apothem * (r - 1)
       else
-        x = m[r][c - 1].x + (3 * side / 2)
-        y = m[r][c - 1].y + apothem
+        x = m[r][c - 1].home.x + (3 * side / 2)
+        y = m[r][c - 1].home.y + apothem
       end
 
       local color = { 0, 0, 0 }
