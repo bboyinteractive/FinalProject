@@ -1,11 +1,11 @@
 local pi = math.pi
 
-local Hex = require 'hex'
+local Grid = require 'grid'
 
 function love.load()
   love.graphics.setBackgroundColor(25, 25, 25)
-  --grid = Hex(1, 37, 15)
-  grid = Hex(24, 37, 15)
+  --grid = Grid(1, 37, 15)
+  grid = Grid(24, 37, 15)
 end
 
 function love.update(dt)
