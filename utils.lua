@@ -13,4 +13,11 @@ return {
   dist = function(x, y)
     return sqrt(x * x + y * y)
   end,
+  shuffle = function(t)
+    for n = #t, 2, -1 do
+      local k = random(n)
+      t[n], t[k] = t[k], t[n]
+    end
+    return t
+  end,
 }

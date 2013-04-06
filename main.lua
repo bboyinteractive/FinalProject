@@ -1,6 +1,6 @@
+local Grid  = require 'grid'
+local Timer = require 'lib.timer'
 local pi = math.pi
-
-local Grid = require 'grid'
 
 function love.load()
   love.graphics.setBackgroundColor(25, 25, 25)
@@ -9,6 +9,8 @@ function love.load()
 end
 
 function love.update(dt)
+  Timer.update(dt)
+
   if love.mouse.isDown('l') then
     local v = grid:select(love.mouse.getPosition())
     if v then

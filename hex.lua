@@ -1,27 +1,25 @@
-local sqrt, pi = math.sqrt, math.pi
+local Class = require 'lib.class'
 local Utils = require 'utils'
 
-local Hex = {}
-Hex.__index = Hex
-
+local pi = math.pi
 local MAX_DISPLACEMENT = 40
 
-function Hex:new(x, y, side, apothem, color)
-  local o = {}
-  o.x, o.y = Utils.edgeRandom(side)
-  o.home = { x = x, y = y }
-  o.side = side
-  o.apothem = apothem
-  o.color = color
-  o.angle = 0
-  o.speed = 0
-  return setmetatable(o, self)
+local Hex = Class{}
+function Hex:init(x, y, side, apothem, color)
+  self.x, self.y = Utils.edgeRandom(side)
+  self._home = { x = x, y = y }
+  self.side = side
+  self.apothem = apothem
+  self.color = color or { 0, 0, 0 }
+  self.angle = 0
+  self.speed = 0
+  self.start = false
 end
 
 function Hex:update(dt)
-  if not (self.x == self.home.x and self.y == self.home.y) then
-    self.x = self.x + (self.home.x - self.x) * dt
-    self.y = self.y + (self.home.y - self.y) * dt
+  if self.start and not (self.x == self._home.x and self.y == self._home.y) then
+    self.x = self.x + (self._home.x - self.x) * dt
+    self.y = self.y + (self._home.y - self.y) * dt
   end
 
   self.angle = self.angle + dt * self.speed
@@ -31,6 +29,10 @@ end
 function Hex:contains(x, y)
   local a, b = x - self.x, y - self.y
   return a * a + b * b <= self.apothem * self.apothem
+end
+
+function Hex:getHomePosition()
+  return self._home.x, self._home.y
 end
 
 function Hex:draw()
@@ -58,4 +60,4 @@ function Hex:draw()
   love.graphics.pop()
 end
 
-return setmetatable(Hex, { __call = Hex.new })
+return Hex
