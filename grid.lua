@@ -34,15 +34,23 @@ function Grid:init(rows, columns, side)
       self._m[r][c] = Hex(x, y, side, apothem)
     end
   end
-
-  Timer.addPeriodic(0.001, function() self:launch() end, self._count - 1)
 end
 
 function Grid:launch()
+  Timer.addPeriodic(0.001, function() self:settle() end, self._count - 1)
+end
+
+function Grid:settle()
   self._count = self._count - 1
   local n = self._order[self._count]
   local r, c = floor(n / #self._m[1]) + 1, n % #self._m[1] + 1
   self._m[r][c].start = true
+end
+
+function Grid:unsettle()
+  self._count = self._count - 1
+  local n = self._order[self._count]
+  local r, c = floor(n / #self._m[1]) + 1, n % #self._m[1] + 1
 end
 
 function Grid:reset()
