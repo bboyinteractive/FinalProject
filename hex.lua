@@ -12,9 +12,11 @@ function Hex:init(x, y, side, apothem, color)
   self.side = side
   self.apothem = apothem
   self.color = color or { 0, 0, 0 }
+  self._originalColor = self.color
   self.angle = 0
   self.speed = pi / 2
   self.start = false
+  self.time = 0
 end
 
 function Hex:update(dt)
@@ -30,11 +32,11 @@ end
 function Hex:fade(speed)
   Timer.do_for(speed, function (dt)
     self.color = {
-      Utils.lerp(self.color[1], 0, dt),
-      Utils.lerp(self.color[2], 0, dt),
-      Utils.lerp(self.color[3], 0, dt),
+      Utils.lerp(self._originalColor[1], 0, self.time),
+      Utils.lerp(self._originalColor[2], 0, self.time),
+      Utils.lerp(self._originalColor[3], 0, self.time),
     }
-  end)
+  end, function () self.time = 0 end)
 end
 
 function Hex:draw()

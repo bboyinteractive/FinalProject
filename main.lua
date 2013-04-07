@@ -1,11 +1,12 @@
-local lg, lm = love.graphics, love.mouse
+local lg, lm, lt = love.graphics, love.mouse, love.timer
 local pi, sin = math.pi, math.sin
 
-local Utils = require 'utils'
 local Grid  = require 'grid'
+local Snake = require 'snake'
 local Timer = require 'lib.timer'
+local Utils = require 'utils'
 
-local time, grid, px, canvases
+local time, grid, px, canvases, snakes
 
 function love.load()
   lg.setBackgroundColor(25, 25, 25)
@@ -28,10 +29,17 @@ function love.load()
     bg = lg.newCanvas(),
     rays = lg.newCanvas(lg.getWidth() / 2, lg.getHeight() / 2),
   }
+
+  snakes = {
+    Snake(grid, 1, 1, { 255, 0, 0 }),
+    Snake(grid, grid:rows(), 1, { 0, 255, 0 }),
+    Snake(grid, 1, grid:columns(), { 0, 0, 255 }),
+  }
 end
 
 function love.update(dt)
   Timer.update(dt)
+
   time = time + dt
 
   if lm.isDown('l') then
@@ -86,13 +94,14 @@ function love.draw()
   px.effect:send('decay', px.externs.decay)
   px.effect:send('density', px.externs.density + sin(time * 60) * 0.02)
   px.effect:send('weight', px.externs.weight)
-  px.effect:send('light', {
-    lm.getX() / lg.getWidth(),
-    1 - lm.getY() / lg.getHeight() })
   px.effect:send('samples', px.externs.samples)
 
   -- Draw a scaled down version of the background onto the
   -- half-sized ray canvas
+  px.effect:send('light', {
+    lm.getX() / lg.getWidth(),
+    1 - lm.getY() / lg.getHeight() })
+
   lg.draw(canvases.bg, 0, 0, 0, 0.5, 0.5)
 
   -- Turn off the pixel effect and stop drawing to a canvas
@@ -105,7 +114,7 @@ function love.draw()
   -- Draw the ray canvas twice, scaled up to the screen size
   lg.setBlendMode('additive')
   lg.draw(canvases.rays, 0, 0, 0, 2, 2)
-  lg.draw(canvases.rays, 0, 0, 0, 2, 2)
+  --lg.draw(canvases.rays, 0, 0, 0, 2, 2)
 
   lg.setBlendMode('alpha')
   lg.print(string.format([[
@@ -114,7 +123,8 @@ function love.draw()
   Density: %.2f
   Weight: %.2f
   Samples: %d
-  ]], px.externs.exposure, px.externs.decay, px.externs.density, px.externs.weight, px.externs.samples), 10, 10)
+  FPS: %d
+  ]], px.externs.exposure, px.externs.decay, px.externs.density, px.externs.weight, px.externs.samples, lt.getFPS()), 10, 10)
 end
 
 function love.keypressed(k, c)
