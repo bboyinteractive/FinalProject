@@ -1,5 +1,5 @@
 local lg, lm, lt = love.graphics, love.mouse, love.timer
-local pi, sin = math.pi, math.sin
+local pi, sin, cos = math.pi, math.sin, math.cos
 
 local Grid  = require 'grid'
 local Snake = require 'snake'
@@ -22,6 +22,7 @@ function love.load()
         density = 0.7,
         weight = 0.29,
         samples = 70,
+        light = { 0, 0 },
       },
       effect = Utils.createEffect('effects/light.glsl'),
     }
@@ -57,6 +58,13 @@ function love.update(dt)
       v.color = { 0, 0, 0 }
       v.speed = 0
     end
+  end
+
+  if lg.isSupported('pixeleffect') then
+    px.externs.light = {
+      lg.getWidth() / 2 + 20 * cos(time * pi * 2),
+      lg.getHeight() / 2 + 20 * sin(time * pi * 2),
+    }
   end
 
   grid:update(dt)
@@ -101,9 +109,7 @@ function love.draw()
 
     -- Draw a scaled down version of the background onto the
     -- half-sized ray canvas
-    px.effect:send('light', {
-      lm.getX() / lg.getWidth(),
-      1 - lm.getY() / lg.getHeight() })
+    px.effect:send('light', px.externs.light)
 
     lg.draw(canvases.bg, 0, 0, 0, 0.5, 0.5)
 
