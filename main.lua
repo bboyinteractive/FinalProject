@@ -1,14 +1,20 @@
 local lg, lm, lt = love.graphics, love.mouse, love.timer
 local pi, sin = math.pi, math.sin
 
-local Grid  = require 'grid'
-local Snake = require 'snake'
-local Timer = require 'lib.timer'
-local Utils = require 'utils'
+local Grid   = require 'grid'
+local Snake  = require 'snake'
+local Socket = require 'socket'
+local Timer  = require 'lib.timer'
+local Utils  = require 'utils'
 
 local time, grid, px, canvases, snakes
 
+local udp
+
 function love.load()
+  udp = Socket.udp()
+  udp:settimeout(0)
+
   lg.setBackgroundColor(25, 25, 25)
 
   time = 0
@@ -40,6 +46,13 @@ function love.load()
 end
 
 function love.update(dt)
+  local data, msg = udp:receive()
+  if data then
+    -- Add parsing code
+  elseif msg ~= 'timeout' then
+    error(string.format('Network error: %s', tostring(msg)))
+  end
+
   Timer.update(dt)
 
   time = time + dt
