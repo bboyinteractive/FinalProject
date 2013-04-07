@@ -14,16 +14,18 @@ function love.load()
   time = 0
   grid = Grid(24, 37, 15)
 
-  px = {
-    externs = {
-      exposure = 0.3,
-      decay = 0.95,
-      density = 0.7,
-      weight = 0.29,
-      samples = 70,
-    },
-    effect = Utils.createEffect('effects/light.glsl'),
-  }
+  if lg.isSupported('pixeleffect') then
+    px = {
+      externs = {
+        exposure = 0.3,
+        decay = 0.95,
+        density = 0.7,
+        weight = 0.29,
+        samples = 70,
+      },
+      effect = Utils.createEffect('effects/light.glsl'),
+    }
+  end
 
   canvases = {
     bg = lg.newCanvas(),
@@ -86,26 +88,30 @@ function love.draw()
   lg.setColor(255, 255, 255, 255)
   lg.setCanvas(canvases.rays)
 
-  -- Activate the pixel effect
-  lg.setPixelEffect(px.effect)
+  if lg.isSupported('pixeleffect') then
+    -- Activate the pixel effect
+    lg.setPixelEffect(px.effect)
 
-  -- Send parameters into the effect
-  px.effect:send('exposure', px.externs.exposure)
-  px.effect:send('decay', px.externs.decay)
-  px.effect:send('density', px.externs.density + sin(time * 60) * 0.02)
-  px.effect:send('weight', px.externs.weight)
-  px.effect:send('samples', px.externs.samples)
+    -- Send parameters into the effect
+    px.effect:send('exposure', px.externs.exposure)
+    px.effect:send('decay', px.externs.decay)
+    px.effect:send('density', px.externs.density + sin(time * 60) * 0.02)
+    px.effect:send('weight', px.externs.weight)
+    px.effect:send('samples', px.externs.samples)
 
-  -- Draw a scaled down version of the background onto the
-  -- half-sized ray canvas
-  px.effect:send('light', {
-    lm.getX() / lg.getWidth(),
-    1 - lm.getY() / lg.getHeight() })
+    -- Draw a scaled down version of the background onto the
+    -- half-sized ray canvas
+    px.effect:send('light', {
+      lm.getX() / lg.getWidth(),
+      1 - lm.getY() / lg.getHeight() })
 
-  lg.draw(canvases.bg, 0, 0, 0, 0.5, 0.5)
+    lg.draw(canvases.bg, 0, 0, 0, 0.5, 0.5)
 
-  -- Turn off the pixel effect and stop drawing to a canvas
-  lg.setPixelEffect()
+    -- Turn off the pixel effect
+    lg.setPixelEffect()
+  end
+
+  -- Stop drawing to any canvas
   lg.setCanvas()
 
   -- Draw the unaltered background
