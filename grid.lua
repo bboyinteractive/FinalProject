@@ -35,10 +35,18 @@ function Grid:get(row, column)
   return self._m[row][column]
 end
 
+function Grid:rows()
+  return #self._m
+end
+
+function Grid:columns()
+  return #self._m[1]
+end
+
 function Grid:select(x, y)
-  for r = 1, #self._m do
-    for c = 1, #self._m[r] do
-      if self._m[r][c]:contains(x, y) then
+  for r = 1, self:rows() do
+    for c = 1, self:columns() do
+      if self:get(r, c):contains(x, y) then
         return self:get(r, c)
       end
     end
@@ -48,17 +56,17 @@ function Grid:select(x, y)
 end
 
 function Grid:update(dt)
-  for r = 1, #self._m do
-    for c = 1, #self._m[r] do
-      self._m[r][c]:update(dt)
+  for r = 1, self:rows() do
+    for c = 1, self:columns() do
+      self:get(r, c):update(dt)
     end
   end
 end
 
 function Grid:draw()
-  for r = 1, #self._m do
-    for c = 1, #self._m[r] do
-      self._m[r][c]:draw()
+  for r = 1, self:rows() do
+    for c = 1, self:columns() do
+      self:get(r, c):draw()
     end
   end
 end

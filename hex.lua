@@ -1,4 +1,5 @@
 local Class = require 'lib.class'
+local Timer = require 'lib.timer'
 local Utils = require 'utils'
 
 local pi = math.pi
@@ -24,6 +25,16 @@ end
 function Hex:contains(x, y)
   local a, b = x - self.x, y - self.y
   return a * a + b * b <= self.apothem * self.apothem
+end
+
+function Hex:fade(speed)
+  Timer.do_for(speed, function (dt)
+    self.color = {
+      Utils.lerp(self.color[1], 0, dt),
+      Utils.lerp(self.color[2], 0, dt),
+      Utils.lerp(self.color[3], 0, dt),
+    }
+  end)
 end
 
 function Hex:draw()

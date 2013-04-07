@@ -9,4 +9,7 @@ return {
     local t = lf.read(filename)
     return lg.newPixelEffect(t)
   end,
+  lerp = function (a, b, k)
+    return a + (b - a) * k
+  end,
 }

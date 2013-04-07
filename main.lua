@@ -39,6 +39,7 @@ function love.update(dt)
     if v then
       v.color = { 255, 0, 0 }
       v.speed = pi * 2
+      v:fade(5)
     end
   elseif lm.isDown('r') then
     local v = grid:select(lm.getPosition())
