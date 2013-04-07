@@ -122,15 +122,17 @@ function love.draw()
   lg.draw(canvases.rays, 0, 0, 0, 2, 2)
   --lg.draw(canvases.rays, 0, 0, 0, 2, 2)
 
-  lg.setBlendMode('alpha')
-  lg.print(string.format([[
-  Exposure: %.2f
-  Decay: %.3f
-  Density: %.2f
-  Weight: %.2f
-  Samples: %d
-  FPS: %d
-  ]], px.externs.exposure, px.externs.decay, px.externs.density, px.externs.weight, px.externs.samples, lt.getFPS()), 10, 10)
+  if lg.isSupported('pixeleffect') then
+    lg.setBlendMode('alpha')
+    lg.print(string.format([[
+    Exposure: %.2f
+    Decay: %.3f
+    Density: %.2f
+    Weight: %.2f
+    Samples: %d
+    FPS: %d
+    ]], px.externs.exposure, px.externs.decay, px.externs.density, px.externs.weight, px.externs.samples, lt.getFPS()), 10, 10)
+  end
 end
 
 function love.keypressed(k, c)

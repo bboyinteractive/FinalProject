@@ -18,7 +18,7 @@ function Snake:changeSpeed(speed)
 end
 
 function Snake:_update(speed)
-  --self.grid:get(self.row, self.column):fade(speed * 50)
+  self.grid:get(self.row, self.column):fade(speed)
 
   local lr, ur = -1, 1
   local lc, uc = -1, 1
@@ -36,7 +36,6 @@ function Snake:_update(speed)
   end
 
   self.row, self.column = self.row + random(lr, ur), self.column + random(lc, uc)
-
   self.grid:get(self.row, self.column).color = self.color
 end
 

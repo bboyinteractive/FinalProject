@@ -12,4 +12,11 @@ return {
   lerp = function (a, b, k)
     return a + (b - a) * k
   end,
+  sum = function (t)
+    local s = 0
+    for _,v in ipairs(t) do
+      s = s + v
+    end
+    return s
+  end
 }
