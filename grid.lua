@@ -27,35 +27,13 @@ function Grid:init(rows, columns, side)
         local c = floor(c / 2)
         x, y = 3 * side * c, 2 * apothem * (r - 1)
       else
-        local hx, hy = self._m[r][c - 1]:getHomePosition()
-        x, y = hx + (3 * side / 2), hy + apothem
+        x = self._m[r][c - 1].x + (3 * side / 2)
+        y = self._m[r][c - 1].y + apothem
       end
 
       self._m[r][c] = Hex(x, y, side, apothem)
     end
   end
-end
-
-function Grid:launch()
-  Timer.addPeriodic(0.001, function() self:settle() end, self._count - 1)
-end
-
-function Grid:settle()
-  self._count = self._count - 1
-  local n = self._order[self._count]
-  local r, c = floor(n / #self._m[1]) + 1, n % #self._m[1] + 1
-  self._m[r][c].start = true
-end
-
-function Grid:unsettle()
-  self._count = self._count - 1
-  local n = self._order[self._count]
-  local r, c = floor(n / #self._m[1]) + 1, n % #self._m[1] + 1
-end
-
-function Grid:reset()
-  self._order = Utils.shuffle(self._order)
-  self._count = #self._m * #self._m[1]
 end
 
 function Grid:get(row, column)

@@ -4,12 +4,16 @@ local pi = math.pi
 
 function love.load()
   love.graphics.setBackgroundColor(25, 25, 25)
-  --grid = Grid(1, 37, 15)
+  time = 0
+
   grid = Grid(24, 37, 15)
 end
 
 function love.update(dt)
   Timer.update(dt)
+  time = time + dt
+
+  --noise:send('time', time)
 
   if love.mouse.isDown('l') then
     local v = grid:select(love.mouse.getPosition())
