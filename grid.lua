@@ -9,11 +9,6 @@ local Grid = Class{}
 function Grid:init(rows, columns, side)
   self._count = rows * columns
   self._m = {}
-  self._order = {}
-  for i = 1, self._count - 1 do
-    self._order[i] = i
-  end
-  self._order = Utils.shuffle(self._order)
 
   local apothem = sqrt(3) / 2 * side
 
