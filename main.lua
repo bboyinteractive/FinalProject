@@ -62,8 +62,10 @@ function love.update(dt)
 
   if lg.isSupported('pixeleffect') then
     px.externs.light = {
-      lg.getWidth() / 2 + 20 * cos(time * pi * 2),
-      lg.getHeight() / 2 + 20 * sin(time * pi * 2),
+      --lm.getX() / lg.getWidth(),
+      --1 - lm.getY() / lg.getHeight(),
+      (lg.getWidth() / 2 + 100 * cos(time * pi * 2)) / lg.getWidth(),
+      (lg.getHeight() / 2 + 100 * sin(time * pi * 2)) / lg.getHeight(),
     }
   end
 
@@ -126,7 +128,7 @@ function love.draw()
   -- Draw the ray canvas twice, scaled up to the screen size
   lg.setBlendMode('additive')
   lg.draw(canvases.rays, 0, 0, 0, 2, 2)
-  --lg.draw(canvases.rays, 0, 0, 0, 2, 2)
+  lg.draw(canvases.rays, 0, 0, 0, 2, 2)
 
   if lg.isSupported('pixeleffect') then
     lg.setBlendMode('alpha')
@@ -136,8 +138,16 @@ function love.draw()
     Density: %.2f
     Weight: %.2f
     Samples: %d
+    Light Position: (%.2f, %.2f)
     FPS: %d
-    ]], px.externs.exposure, px.externs.decay, px.externs.density, px.externs.weight, px.externs.samples, lt.getFPS()), 10, 10)
+    ]], 
+    px.externs.exposure,
+    px.externs.decay,
+    px.externs.density,
+    px.externs.weight,
+    px.externs.samples,
+    px.externs.light[1], px.externs.light[2],
+    lt.getFPS()), 10, 10)
   end
 end
 
