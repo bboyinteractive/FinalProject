@@ -64,8 +64,8 @@ function love.update(dt)
     px.externs.light = {
       --lm.getX() / lg.getWidth(),
       --1 - lm.getY() / lg.getHeight(),
-      (lg.getWidth() / 2 + 100 * cos(time * pi * 2)) / lg.getWidth(),
-      (lg.getHeight() / 2 + 100 * sin(time * pi * 2)) / lg.getHeight(),
+      (lg.getWidth() / 2 + 200 * cos(time * pi * 2)) / lg.getWidth(),
+      (lg.getHeight() / 2 + 200 * sin(time * pi * 2)) / lg.getHeight(),
     }
   end
 
@@ -94,8 +94,10 @@ function love.draw()
   lg.setColor(0, 0, 0, 255)
   grid:draw()
 
-  -- Switch to the ray canvas
   lg.setColor(255, 255, 255, 255)
+  lg.circle('fill', px.externs.light[1] * lg.getWidth(), px.externs.light[2] * lg.getHeight(), 3)
+
+  -- Switch to the ray canvas
   lg.setCanvas(canvases.rays)
 
   if lg.isSupported('pixeleffect') then
