@@ -2,8 +2,7 @@
 
 import sys, getopt, socket, serial
 
-
-def main(argv):
+def parse(argv):
   UDP_IP = 'localhost'
   UDP_PORT = 9000
 
@@ -29,15 +28,16 @@ def main(argv):
     elif opt in ('-b', '--baud'):
       SERIAL_BAUD_RATE = arg
 
-  print('Listening to serial {0} @ baud rate {1}'.format(SERIAL_PORT, SERIAL_BAUD_RATE))
-  print('Broadcasting to {0}:{1}'.format(UDP_IP, UDP_PORT))
-
-  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  ser = serial.Serial(SERIAL_PORT, SERIAL_BAUD_RATE)
-
-  while True:
-    buf = ser.readline()
-    sock.sendto(buf, (UDP_IP, UDP_PORT))
+  return dict(udp = (UDP_IP, UDP_PORT), serial = (SERIAL_PORT, SERIAL_BAUD_RATE))
 
 if __name__ == '__main__':
-  main(sys.argv[1:])
+  connection = parse(sys.argv[1:])
+
+  print('Listening to serial port {0} @ {1}'.format(connection['serial'][0], connection['serial'][1]))
+  print('Broadcasting to http://{0}:{1}'.format(connection['udp'][0], connection['udp'][1]))
+
+  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  ser = serial.Serial(connection['serial'][0], connection['serial'][1])
+
+  while True:
+    sock.sendto(ser.readline(), connection['udp'])
