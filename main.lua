@@ -53,7 +53,17 @@ local function pollUDP()
   repeat
     data, msg, address, port = udp:receivefrom()
     if data then
-      print(data)
+      local first, second, third, fourth =
+        data:match('(%d+) (%d+) (%d+) (%d+)')
+      print(first, second, third, fourth)
+
+      snakes[1]:changeSpeed()
+      snakes[1]:changeFade()
+
+      snakes[2]:changeSpeed()
+      snakes[2]:changeFade()
+
+      -- Decide how pitch affects the light
     elseif msg ~= 'timeout' then
       error(string.format('Network error: %s', tostring(msg)))
     end
