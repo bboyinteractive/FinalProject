@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
 import sys, getopt, socket, serial
+from OSC import OSCClient, OSCMessage
 
 def parse(argv):
   UDP_IP = 'localhost'
-  UDP_PORT = 9000
+  UDP_PORT = 7565
 
   SERIAL_PORT = '/dev/ttyACM0'
   SERIAL_BAUD_RATE = 9600
@@ -22,11 +23,11 @@ def parse(argv):
     elif opt in ('-i', '--ip'):
       UDP_IP = arg
     elif opt in ('-p', '--port'):
-      UDP_PORT = arg
+      UDP_PORT = int(arg)
     elif opt in ('-s', '--serial'):
       SERIAL_PORT = arg
     elif opt in ('-b', '--baud'):
-      SERIAL_BAUD_RATE = arg
+      SERIAL_BAUD_RATE = int(arg)
 
   return dict(udp = (UDP_IP, UDP_PORT), serial = (SERIAL_PORT, SERIAL_BAUD_RATE))
 
@@ -37,7 +38,15 @@ if __name__ == '__main__':
   print('Broadcasting to http://{0}:{1}'.format(connection['udp'][0], connection['udp'][1]))
 
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  client = OSCClient()
+  client.connect(connection['udp'])
   ser = serial.Serial(connection['serial'][0], connection['serial'][1])
 
   while True:
-    sock.sendto(ser.readline(), connection['udp'])
+    buf = ser.readline()
+    captures = re.findall(r'\d+', buf)
+    sock.sendto(buf, connection['udp'])
+    client.send(OSCMessage('/1/fader1', captures[0])) # Flex sensor
+    client.send(OSCMessage('/1/fader2', captures[1])) # Flex sensor
+    client.send(OSCMessage('/1/fader3', captures[2])) # Accelerometer
+    client.send(OSCMessage('/1/fader5', captures[3])) # Pressure
