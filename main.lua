@@ -53,15 +53,17 @@ local function pollUDP()
   repeat
     data, msg, address, port = udp:receivefrom()
     if data then
-      local first, second, third, fourth =
+      local flex1, flex2, accelerometer, pitch =
         data:match('(%d+) (%d+) (%d+) (%d+)')
-      print(first, second, third, fourth)
 
-      snakes[1]:changeSpeed()
-      snakes[1]:changeFade()
+      print(flex1, flex2, accelerometer, pitch)
 
-      snakes[2]:changeSpeed()
-      snakes[2]:changeFade()
+      snakes[1]:changeFade(flex1)
+      snakes[2]:changeFade(flex2)
+
+      for _,v in ipairs(snakes) do
+        v:changeSpeed(accelerometer)
+      end
 
       -- Decide how pitch affects the light
     elseif msg ~= 'timeout' then
