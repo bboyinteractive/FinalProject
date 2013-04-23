@@ -11,6 +11,8 @@ local time, grid, px, canvases, snakes
 local udp
 local address, port = 'localhost', 9000
 
+local flex1, flex2, accel, pressure = 0, 0, 0, 0
+
 function love.load()
   udp = Socket.udp()
   udp:settimeout(0)
@@ -53,15 +55,15 @@ local function pollUDP()
   repeat
     data, msg, address, port = udp:receivefrom()
     if data then
-      local first, second, third, fourth =
+      local flex1, flex2, accel, pressure =
         data:match('(%d+) (%d+) (%d+) (%d+)')
-      print(first, second, third, fourth)
+      print(flex1, flex2, accel, pressure)
 
-      snakes[1]:changeSpeed()
-      snakes[1]:changeFade()
+      --snakes[1]:changeSpeed()
+      --snakes[1]:changeFade()
 
-      snakes[2]:changeSpeed()
-      snakes[2]:changeFade()
+      --snakes[2]:changeSpeed()
+      --snakes[2]:changeFade()
 
       -- Decide how pitch affects the light
     elseif msg ~= 'timeout' then
@@ -102,6 +104,10 @@ function love.update(dt)
   end
 
   grid:update(dt)
+
+  for _,v in ipairs(snakes) do
+    v:update(dt)
+  end
 end
 
 function love.draw()
@@ -164,49 +170,87 @@ function love.draw()
   lg.draw(canvases.rays, 0, 0, 0, 2, 2)
   lg.draw(canvases.rays, 0, 0, 0, 2, 2)
 
-  if lg.isSupported('pixeleffect') then
-    lg.setBlendMode('alpha')
-    lg.print(string.format([[
-    Exposure: %.2f
-    Decay: %.3f
-    Density: %.2f
-    Weight: %.2f
-    Samples: %d
-    Light Position: (%.2f, %.2f)
-    FPS: %d
-    ]], 
-    px.externs.exposure,
-    px.externs.decay,
-    px.externs.density,
-    px.externs.weight,
-    px.externs.samples,
-    px.externs.light[1], px.externs.light[2],
-    lt.getFPS()), 10, 10)
-  end
+  lg.setBlendMode('alpha')
+  lg.print(string.format([[
+  Flex 1: %.2f
+  Flex 2: %.2f
+  Accelerometer: %.2f
+  Pressure: %.2f
+  ]],
+  flex1,
+  flex2,
+  accel,
+  pressure), 10, 10)
+
+  --if lg.isSupported('pixeleffect') then
+    --lg.setBlendMode('alpha')
+    --lg.print(string.format([[
+    --Exposure: %.2f
+    --Decay: %.3f
+    --Density: %.2f
+    --Weight: %.2f
+    --Samples: %d
+    --Light Position: (%.2f, %.2f)
+    --FPS: %d
+    --]], 
+    --px.externs.exposure,
+    --px.externs.decay,
+    --px.externs.density,
+    --px.externs.weight,
+    --px.externs.samples,
+    --px.externs.light[1], px.externs.light[2],
+    --lt.getFPS()), 10, 10)
+  --end
 end
 
 function love.keypressed(k, c)
   if k == 'escape' then
     love.event.quit()
   elseif k == 'q' then
-    px.externs.exposure = px.externs.exposure + 0.1
+    flex1 = flex1 + 0.01
+    snakes[1]:changeSpeed(flex1)
+    --px.externs.exposure = px.externs.exposure + 0.1
   elseif k == 'a' then
-    px.externs.exposure = px.externs.exposure - 0.1
+    flex1 = flex1 - 0.01
+    snakes[1]:changeSpeed(flex1)
+    --px.externs.exposure = px.externs.exposure - 0.1
   elseif k == 'w' then
-    px.externs.decay = px.externs.decay + 0.005
+    flex2 = flex2 + 0.01
+    snakes[1]:changeSpeed(flex2)
+    --px.externs.decay = px.externs.decay + 0.005
   elseif k == 's' then
-    px.externs.decay = px.externs.decay - 0.005
+    flex2 = flex2 - 0.01
+    snakes[1]:changeSpeed(flex2)
+    --px.externs.decay = px.externs.decay - 0.005
   elseif k == 'e' then
-    px.externs.density = px.externs.density + 0.1
+    accel = accel + 0.01
+    if accel > 1 then
+      accel = 0.9
+    elseif accel < 0 then
+      accel = 0.1
+    end
+    snakes[1]:changeFade(accel)
+    snakes[2]:changeFade(accel)
+    --px.externs.density = px.externs.density + 0.1
   elseif k == 'd' then
-    px.externs.density = px.externs.density - 0.1
+    accel = accel - 0.01
+    if accel > 1 then
+      accel = 0.9
+    elseif accel < 0 then
+      accel = 0.1
+    end
+    snakes[1]:changeFade(accel)
+    snakes[2]:changeFade(accel)
+    --px.externs.density = px.externs.density - 0.1
   elseif k == 'r' then
-    px.externs.weight = px.externs.weight + 0.01
+    pressure = pressure + 0.1
+    --px.externs.weight = px.externs.weight + 0.01
   elseif k == 'f' then
-    px.externs.weight = px.externs.weight - 0.01
+    pressure = pressure - 0.1
+    --px.externs.weight = px.externs.weight - 0.01
   elseif k == 't' then
-    px.externs.samples = px.externs.samples + 1
+    --px.externs.samples = px.externs.samples + 1
   elseif k == 'g' then
-    px.externs.samples = px.externs.samples - 1
+    --px.externs.samples = px.externs.samples - 1
   end
 end

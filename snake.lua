@@ -11,25 +11,33 @@ function Snake:init(grid, row, column, color)
   self.color = color
   self.fadeSpeed = 0.1
   self.updateSpeed = 0.1
-  self.handle = Timer.addPeriodic(self.updateSpeed, function () self:_update() end)
+  self.timer = 0
+  --self.handle = Timer.addPeriodic(self.updateSpeed, function () self:_update() end)
 end
 
 function Snake:changeFade(fade)
   self.fadeSpeed = fade
 end
 
-function Snake:changeUpdate(speed)
-  if speed - 0.5 < self.updateSpeed and self.updateSpeed < speed + 0.5 then
-    return
-  end
+function Snake:changeSpeed(speed)
+  --if speed - 0.5 < self.updateSpeed and self.updateSpeed < speed + 0.5 then
+    --return
+  --end
 
   self.updateSpeed = speed
 
-  Timer.cancel(self.handle)
-  self.handle = Timer.addPeriodic(self.updateSpeed, function () self:_update(speed) end)
+  --Timer.cancel(self.handle)
+  --self.handle = Timer.addPeriodic(self.updateSpeed, function () self:_update(speed) end)
 end
 
-function Snake:_update()
+function Snake:update(dt)
+  self.timer = self.timer + dt
+  if self.timer < self.updateSpeed then
+    return
+  else
+    self.timer = 0
+  end
+
   self.grid:get(self.row, self.column):fade(self.fadeSpeed)
 
   local lr, ur = -1, 1
