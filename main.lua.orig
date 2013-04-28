@@ -19,10 +19,10 @@ function love.load()
   local err, msg = udp:setsockname(address, port)
   assert(err, msg)
 
-  lg.setBackgroundColor(0, 0, 255)
+  lg.setBackgroundColor(25, 25, 25)
 
   time = 0
-  grid = Grid(14, 21, 25)
+  grid = Grid(24, 37, 15)
 
   if lg.isSupported('pixeleffect') then
     px = {
@@ -55,6 +55,7 @@ local function pollUDP()
   repeat
     data, msg, address, port = udp:receivefrom()
     if data then
+<<<<<<< HEAD
       local flex1, flex2, accel, pressure =
         data:match('(%d+) (%d+) (%d+) (%d+)')
       print(flex1, flex2, accel, pressure)
@@ -64,6 +65,19 @@ local function pollUDP()
 
       --snakes[2]:changeSpeed()
       --snakes[2]:changeFade()
+=======
+      local flex1, flex2, accelerometer, pitch =
+        data:match('(%d+) (%d+) (%d+) (%d+)')
+
+      print(flex1, flex2, accelerometer, pitch)
+
+      snakes[1]:changeFade(flex1)
+      snakes[2]:changeFade(flex2)
+
+      for _,v in ipairs(snakes) do
+        v:changeSpeed(accelerometer)
+      end
+>>>>>>> aaa3fbb00363879022860d13adc31dc8717c80f9
 
       -- Decide how pitch affects the light
     elseif msg ~= 'timeout' then
@@ -216,11 +230,11 @@ function love.keypressed(k, c)
     --px.externs.exposure = px.externs.exposure - 0.1
   elseif k == 'w' then
     flex2 = flex2 + 0.01
-    snakes[2]:changeSpeed(flex2)
+    snakes[1]:changeSpeed(flex2)
     --px.externs.decay = px.externs.decay + 0.005
   elseif k == 's' then
     flex2 = flex2 - 0.01
-    snakes[2]:changeSpeed(flex2)
+    snakes[1]:changeSpeed(flex2)
     --px.externs.decay = px.externs.decay - 0.005
   elseif k == 'e' then
     accel = accel + 0.01
