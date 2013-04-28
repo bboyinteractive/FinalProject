@@ -1,5 +1,5 @@
 local lf, lg = love.filesystem, love.graphics
-local abs, ceil, random, sqrt = math.abs, math.ceil, math.random, math.sqrt
+local abs, ceil, random, sqrt, max, min = math.abs, math.ceil, math.random, math.sqrt, math.max, math.min
 
 return {
   dist = function(x, y)
@@ -47,5 +47,8 @@ return {
     end
 
     return ceil((r + m) * 256), ceil((g + m) * 256), ceil((b + m) * 256)
+  end,
+  bound = function (x, l, u)
+    return max(min(x, u), l)
   end,
 }

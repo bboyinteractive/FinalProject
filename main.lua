@@ -182,9 +182,9 @@ function love.draw()
   Pressure: %.2f
   FPS: %d
   ]],
-  flex1,
-  flex2,
-  accel,
+  snakes[1].updateSpeed,
+  snakes[2].updateSpeed,
+  snakes[1].fadeSpeed,
   pressure,
   lt.getFPS()), 10, 10)
 

@@ -2,6 +2,7 @@ local random = math.random
 
 local Timer = require 'lib.timer'
 local Class = require 'lib.class'
+local Utils = require 'utils'
 
 local Snake = Class{}
 function Snake:init(grid, row, column, color)
@@ -9,21 +10,19 @@ function Snake:init(grid, row, column, color)
   self.row = row
   self.column = column
   self.color = color
-  self.fadeSpeed = 0.1
-  self.updateSpeed = 0.1
+  self.fadeSpeed = 0.01
+  self.updateSpeed = 0
   self.timer = 0
   --self.handle = Timer.addPeriodic(self.updateSpeed, function () self:_update() end)
 end
 
 function Snake:changeFade(fade)
+  fade = Utils.bound(fade, 0.01, 0.1)
   self.fadeSpeed = fade
 end
 
 function Snake:changeSpeed(speed)
-  --if speed - 0.5 < self.updateSpeed and self.updateSpeed < speed + 0.5 then
-    --return
-  --end
-
+  speed = Utils.bound(speed, 0, 0.5)
   self.updateSpeed = speed
 
   --Timer.cancel(self.handle)
