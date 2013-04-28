@@ -1,5 +1,5 @@
 local lf, lg = love.filesystem, love.graphics
-local random, sqrt = math.random, math.sqrt
+local abs, ceil, random, sqrt = math.abs, math.ceil, math.random, math.sqrt
 
 return {
   dist = function(x, y)
@@ -18,5 +18,34 @@ return {
       s = s + v
     end
     return s
-  end
+  end,
+  rescale = function (a0, a1, b0, b1, t)
+    return b0 + (t - a0) * (b1 - b0) / (a1 - a0)
+  end,
+  HSLtoRGB = function (h, s, l)
+    if s == 0 then return l, l, l end
+
+    h, s, l = h / 256 * 6, s / 255, l / 255
+
+    local c = (1 - abs(2 * l - 1)) * s
+    local x = (1 - abs(h % 2 - 1)) * c
+
+    local m, r, g, b = (l - 0.5 * c), 0, 0, 0
+
+    if h < 1 then
+      r, g, b = c, x, 0
+    elseif h < 2 then
+      r, g, b = x, c, 0
+    elseif h < 3 then
+      r, g, b = 0, c, x
+    elseif h < 4 then
+      r, g, b = 0, x, c
+    elseif h < 5 then
+      r, g, b = x, 0, c
+    else
+      r, g, b = c, 0, x
+    end
+
+    return ceil((r + m) * 256), ceil((g + m) * 256), ceil((b + m) * 256)
+  end,
 }

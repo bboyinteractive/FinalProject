@@ -4,10 +4,10 @@ import sys, getopt, socket, serial, re, time
 from OSC import OSCClient, OSCMessage
 
 def parse(argv):
-  UDP_IP = 'localhost'
+  UDP_IP = '10.201.123.64'
   UDP_PORT = 7565
 
-  SERIAL_PORT = '/dev/ttyACM0'
+  SERIAL_PORT = '/dev/ttyUSB0'
   SERIAL_BAUD_RATE = 9600
 
   try:
@@ -42,44 +42,63 @@ if __name__ == '__main__':
   client.connect(connection['udp'])
   ser = serial.Serial(connection['serial'][0], connection['serial'][1])
 
-  start = time.time()
+  #start = time.time()
   averages = [ 0, 0, 0, 0 ]
   count = 0
   findAverage = True
   while True:
-    #buf = ser.readline()
-    captures = map(int, re.findall(r'\d+', ser.readline()))
+    buf = ser.readline()
+    captures = map(int, re.findall(r'\d+', buf))
+    #print(buf)
 
-    if time.time() - start < 5.0:
-      count += 1
+    averages[0] = (averages[0] * count + captures[0]) / (count + 1)
+    averages[1] = (averages[1] * count + captures[1]) / (count + 1)
+    averages[2] = (averages[2] * count + captures[2]) / (count + 1)
+    averages[3] = (averages[3] * count + captures[3]) / (count + 1)
+    count += 1
 
-      averages[0] += captures[0]
-      averages[1] += captures[1]
-      averages[2] += captures[2]
-      averages[3] += captures[3]
+    #averages[0] += captures[0]
+    #averages[1] += captures[1]
+    #averages[2] += captures[2]
+    #averages[3] += captures[3]
 
-    else:
-      if findAverage:
-        findAverage = False
+    #if time.time() - start < 5.0:
+      #count += 1
 
-        averages[0] /= count
-        averages[1] /= count
-        averages[2] /= count
-        averages[3] /= count
+      #averages[0] += captures[0]
+      #averages[1] += captures[1]
+      #averages[2] += captures[2]
+      #averages[3] += captures[3]
 
-        print('Average:', averages)
+    #else:
+      #if findAverage:
+        #findAverage = False
 
-      data = []
-      for i in range(4):
-        if captures[i] - averages[i] > 0:
-          data[i] = captures[i] - averages[i]
-        else:
-          data[i] = 0
+        #averages[0] /= count
+        #averages[1] /= count
+        #averages[2] /= count
+        #averages[3] /= count
 
-      print('Captures:', captures, 'Converted:', data)
+        #print('Average:', averages)
 
-      #sock.sendto(buf, connection['udp'])
-      client.send(OSCMessage('/1/fader1', data[0])) # Flex sensor
-      client.send(OSCMessage('/1/fader2', data[1])) # Flex sensor
-      client.send(OSCMessage('/1/fader3', data[2])) # Accelerometer
-      client.send(OSCMessage('/1/fader5', data[3])) # Pressure
+      #data = [ 0, 0, 0, 0 ]
+      #for i in range(4):
+        #if captures[i] - averages[i] > 0:
+          #data[i] = captures[i] - averages[i]
+        #else:
+          #data[i] = 0
+
+    data = [
+      captures[0] - averages[0],
+      captures[1] - averages[1],
+      captures[2] - averages[2],
+      captures[3] - averages[3]
+    ]
+
+    print('Captures:', captures)
+
+    sock.sendto(' '.join(str(x) for x in captures), ('10.201.120.183', 9000))
+    client.send(OSCMessage('/1/fader1', captures[0])) # Flex sensor
+    client.send(OSCMessage('/1/fader2', captures[1])) # Flex sensor
+    client.send(OSCMessage('/1/fader3', captures[2])) # Accelerometer
+    client.send(OSCMessage('/1/fader5', captures[3])) # Pressure
