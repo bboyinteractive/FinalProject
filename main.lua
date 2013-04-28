@@ -13,6 +13,12 @@ local address, port = 'localhost', 9000
 
 local flex1, flex2, accel, pressure = 0, 0, 0, 0
 
+local SCALES = {
+  flex1 = { 500, 700 },
+  flex2 = { 500, 700 },
+  accel = { 0, 230 },
+}
+
 function love.load()
   udp = Socket.udp()
   udp:settimeout(0)
@@ -44,8 +50,8 @@ function love.load()
   }
 
   snakes = {
-    Snake(grid, 1, 1, { 255, 0, 0 }),
-    Snake(grid, grid:rows(), grid:columns(), { 0, 255, 0 }),
+    Snake(grid, 1, 1, { Utils.HSLtoRGB(41, 89, 66) }),
+    Snake(grid, grid:rows(), grid:columns(), { Utils.HSLtoRGB(235, 71, 62) }),
     --Snake(grid, 1, grid:columns(), { 0, 0, 255 }),
   }
 end
@@ -55,15 +61,13 @@ local function pollUDP()
   repeat
     data, msg, address, port = udp:receivefrom()
     if data then
-      local flex1, flex2, accel, pressure =
+      flex1, flex2, accel, pressure =
         data:match('(%d+) (%d+) (%d+) (%d+)')
       print(flex1, flex2, accel, pressure)
 
-      --snakes[1]:changeSpeed()
-      --snakes[1]:changeFade()
-
-      --snakes[2]:changeSpeed()
-      --snakes[2]:changeFade()
+      flex1 = Utils.rescale(SCALE.flex1[1], SCALE.flex1[2], 0, 1, flex1)
+      flex2 = Utils.rescale(SCALE.flex2[1], SCALE.flex2[2], 0, 1, flex2)
+      accel = Utils.rescale(SCALE.accel, SCALE.accel, 0, 1, accel)
 
       -- Decide how pitch affects the light
     elseif msg ~= 'timeout' then
@@ -98,8 +102,8 @@ function love.update(dt)
     px.externs.light = {
       --lm.getX() / lg.getWidth(),
       --1 - lm.getY() / lg.getHeight(),
-      (lg.getWidth() / 2 + 200 * cos(time * pi * 2)) / lg.getWidth(),
-      (lg.getHeight() / 2 + 200 * sin(time * pi * 2)) / lg.getHeight(),
+      (lg.getWidth() / 2 + 200 * cos(time * pi * 2 / 10)) / lg.getWidth(),
+      (lg.getHeight() / 2 + 200 * sin(time * pi * 2 / 10)) / lg.getHeight(),
     }
   end
 
@@ -133,7 +137,7 @@ function love.draw()
   grid:draw()
 
   lg.setColor(255, 255, 255, 255)
-  lg.circle('fill', px.externs.light[1] * lg.getWidth(), px.externs.light[2] * lg.getHeight(), 3)
+  --lg.circle('fill', px.externs.light[1] * lg.getWidth(), px.externs.light[2] * lg.getHeight(), 3)
 
   -- Switch to the ray canvas
   lg.setCanvas(canvases.rays)
@@ -176,11 +180,13 @@ function love.draw()
   Flex 2: %.2f
   Accelerometer: %.2f
   Pressure: %.2f
+  FPS: %d
   ]],
   flex1,
   flex2,
   accel,
-  pressure), 10, 10)
+  pressure,
+  lt.getFPS()), 10, 10)
 
   --if lg.isSupported('pixeleffect') then
     --lg.setBlendMode('alpha')
